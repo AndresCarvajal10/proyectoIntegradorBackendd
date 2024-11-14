@@ -1,1 +1,1 @@
-Proyecto integrador del 311 de tegnologia en sistemas
+Proyecto integrador del 311 de tecnologia en sistemas

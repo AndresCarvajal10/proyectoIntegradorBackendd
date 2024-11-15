@@ -1,7 +1,10 @@
 package com.example.proyectoIntegrador.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ResponseRegister {
+@EqualsAndHashCode(callSuper = true)
+public class ResponseRegister extends ResponseGeneric {
+
 }

@@ -17,6 +17,7 @@ public interface ProyectoController {
     ResponseEntity<ResponseLogin> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletRequest request);
 
     @PostMapping("/register")
+    @ResponseBody
     ResponseEntity<ResponseRegister> register(@Valid @RequestBody RegisterDTO registerDTO, HttpServletRequest request);
 
 }

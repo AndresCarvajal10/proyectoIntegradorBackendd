@@ -25,8 +25,8 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
 
         try {
 
-            String sql = "INSERT INTO clientes (nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO clientes (nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             return Optional.of(jdbcTemplate.update(sql,
                     registerDTO.getNombre(),
@@ -36,7 +36,8 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
                     registerDTO.getEmail(),
                     registerDTO.getFechaRegistro(),
                     registerDTO.getEstadoCliente(),
-                    registerDTO.getUsername()
+                    registerDTO.getUsername(),
+                    registerDTO.getRolUser()
             ));
 
         } catch (Exception e) {
@@ -53,7 +54,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         try {
 
             String sql = """
-                    SELECT * FROM clientes
+                    SELECT nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM clientes
                     """;
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ClienteRowMapper()));
 

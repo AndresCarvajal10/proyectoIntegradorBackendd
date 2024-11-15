@@ -35,7 +35,7 @@ public class ProyectoServiceImpl implements ProyectoService {
 
         try {
 
-            proyectoRepository.registerUser(registerDTO).orElseThrow(()-> new RuntimeException("Error. Al registrar usuario"));
+            proyectoRepository.registerUser(registerDTO).orElseThrow(()-> new RuntimeException("Error al registrar usuario"));
 
             var idUser = proyectoRepository.getIdUser(registerDTO.getUsername()).orElseThrow(()-> new RuntimeException("Error. No se encontro el usuario"));
 

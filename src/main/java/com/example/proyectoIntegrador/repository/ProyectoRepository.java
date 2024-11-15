@@ -12,4 +12,8 @@ public interface ProyectoRepository {
 
     Optional<RegisterClient> getInfoUser(RegisterDTO registerDTO);
 
+    Optional<Integer> setSessiones(int codeSession, int userId);
+
+    Optional<Integer> getIdUser(String userName);
+
 }

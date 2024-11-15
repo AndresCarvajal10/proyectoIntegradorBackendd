@@ -9,12 +9,10 @@ public class ResponseGeneric {
     private String responseDesc;
     private Object responseObj;
 
-
-    public ResponseGeneric(String code, String desc, Object obj) {
-        this.responseCode = code;
-        this.responseDesc = desc;
-        this.responseObj = obj;
-    }
-
+//    public ResponseGeneric(String code, String desc, Object obj) {
+//        this.responseCode = code;
+//        this.responseDesc = desc;
+//        this.responseObj = obj;
+//    }
 
 }

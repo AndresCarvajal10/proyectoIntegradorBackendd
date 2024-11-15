@@ -30,7 +30,7 @@ public class ProyectoControllerImpl implements ProyectoController {
         } catch (Exception e) {
             ResponseLogin responseError = new ResponseLogin();
             responseError.setResponseCode("9999");
-            responseError.setResponseDesc(e.getMessage().toString());
+            responseError.setResponseDesc(e.getMessage());
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
         }
@@ -42,14 +42,13 @@ public class ProyectoControllerImpl implements ProyectoController {
         log.debug("START register");
 
         try {
-
-            ResponseRegister responseLogin = proyectoService.registerUser(registerDTO);
-            return ResponseEntity.ok().body(responseLogin);
+            ResponseRegister responseRegister = proyectoService.registerUser(registerDTO);
+            return ResponseEntity.ok().body(responseRegister);
 
         } catch (Exception e) {
             ResponseRegister responseError = new ResponseRegister();
             responseError.setResponseCode("9999");
-            responseError.setResponseDesc(e.getMessage().toString());
+            responseError.setResponseDesc(e.getMessage());
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
         }

@@ -20,6 +20,8 @@ public class RegisterDTO {
     @NotBlank(message = "you must specify the fechaRegistro field")
     private LocalDate fechaRegistro;
     private String estadoCliente;
+    @NotBlank(message = "you must specify the username field")
+    private String username;
     @NotBlank(message = "you must specify the password field")
     private String password;
 }

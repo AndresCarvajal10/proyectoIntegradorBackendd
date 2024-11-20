@@ -1,5 +1,6 @@
 package com.example.proyectoIntegrador.repository.Impl;
 
+import com.example.proyectoIntegrador.models.InfoUser;
 import com.example.proyectoIntegrador.models.RegisterClient;
 import com.example.proyectoIntegrador.models.RegisterDTO;
 import com.example.proyectoIntegrador.repository.ProyectoRepository;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -82,6 +84,83 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         }
 
     }
+
+
+    @Override
+    public Optional<InfoUser> validateUser(String username) {
+
+        log.debug("Obtener informacion del cliente");
+
+        try {
+
+            String sql = """
+                    SELECT nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM clientes
+                    WHERE username = ?
+                    """;
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                InfoUser data = new InfoUser();
+                data.setName(rs.getString("nombre"));
+                data.setLastName(rs.getString("apellido"));
+                data.setAddres(rs.getString("direccion"));
+                data.setPhone(rs.getString("telefono"));
+                data.setEmail(rs.getString("email"));
+                data.setUsername(rs.getString("username"));
+                return data;
+            }, username));
+
+        } catch (Exception e) {
+            log.debug("No se pudo registar el usuario: {}", e.getMessage());
+            return Optional.empty();
+        }
+
+    }
+
+    @Override
+    public Optional<Boolean> validatePassword(String idClient, String password) {
+
+        log.debug("start validatePassword");
+
+        String sql = """
+            SELECT 1
+            FROM passwords
+            WHERE usuario_id = ? AND passwordValue = ?
+            LIMIT 1
+            """;
+
+        try {
+            // Ejecuta la consulta y verifica si hay resultados
+            List<Boolean> results = jdbcTemplate.query(sql, (rs, rowNum) -> Boolean.TRUE, idClient, password);
+
+            // Retorna `Optional` basado en si la lista tiene resultados
+            return results.isEmpty() ? Optional.of(Boolean.FALSE) : Optional.of(Boolean.TRUE);
+
+        } catch (Exception e) {
+            log.error("Error validando la contraseña para el usuario {}: {}", idClient, e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Integer> savePasswordUser(int idClient, String password) {
+
+        log.debug("start guardar password");
+        try {
+            String sql = """
+                    INSERT INTO passwords (usuario_id, passwordValue) VALUES (?, ?)
+                    """;
+
+            return Optional.of(jdbcTemplate.update(sql,
+                    idClient,
+                    password
+            ));
+
+        } catch (Exception e) {
+            log.debug("No se pudo guardar session: {}", e.getMessage());
+            return Optional.empty();
+        }
+
+    }
+
 
     @Override
     public Optional<Integer> setSessiones(int codeSession, int userId) {

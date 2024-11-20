@@ -1,10 +1,8 @@
 package com.example.proyectoIntegrador.controllers.Impl;
 
 import com.example.proyectoIntegrador.controllers.ProyectoController;
-import com.example.proyectoIntegrador.models.LoginDTO;
-import com.example.proyectoIntegrador.models.RegisterDTO;
-import com.example.proyectoIntegrador.models.ResponseLogin;
-import com.example.proyectoIntegrador.models.ResponseRegister;
+import com.example.proyectoIntegrador.enums.CodesResponse;
+import com.example.proyectoIntegrador.models.*;
 import com.example.proyectoIntegrador.services.ProyectoService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +24,22 @@ public class ProyectoControllerImpl implements ProyectoController {
         log.debug("START login");
 
         try {
-            ResponseLogin responseLogin = proyectoService.loginService(loginDTO);
+            InfoUser userInfoLogin = proyectoService.loginService(loginDTO);
+
+            ResponseLogin responseLogin = new ResponseLogin();
+            responseLogin.setResponseCode(CodesResponse.OK.getCode());
+            responseLogin.setResponseDesc(CodesResponse.OK.getDescription());
+            responseLogin.setResponseObj(userInfoLogin);
+
             return ResponseEntity.ok().body(responseLogin);
 
         } catch (Exception e) {
             ResponseLogin responseError = new ResponseLogin();
-            responseError.setResponseCode("9999");
-            responseError.setResponseDesc(e.getMessage());
+            responseError.setResponseCode(CodesResponse.ERROR_NOT_LOGIN.getCode());
+            responseError.setResponseDesc(CodesResponse.ERROR_NOT_LOGIN.getDescription());
+            responseError.setResponseObj(e.getMessage());
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
+            return ResponseEntity.status(HttpStatus.OK).body(responseError);
         }
     }
 
@@ -45,16 +50,17 @@ public class ProyectoControllerImpl implements ProyectoController {
 
         try {
             ResponseRegister responseRegister = proyectoService.registerUser(registerDTO);
-            responseRegister.setResponseCode("0000");
-            responseRegister.setResponseDesc("Se registro correctamente");
+            responseRegister.setResponseCode(CodesResponse.OK.getCode());
+            responseRegister.setResponseDesc(CodesResponse.OK.getDescription());
             return ResponseEntity.ok().body(responseRegister);
 
         } catch (Exception e) {
             ResponseRegister responseError = new ResponseRegister();
-            responseError.setResponseCode("9999");
-            responseError.setResponseDesc(e.getMessage());
+            responseError.setResponseCode(CodesResponse.ERROR_REGISTER_USER.getCode());
+            responseError.setResponseDesc(CodesResponse.ERROR_REGISTER_USER.getDescription());
+            responseError.setResponseObj(e.getMessage());
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
+            return ResponseEntity.status(HttpStatus.OK).body(responseError);
         }
     }
 }

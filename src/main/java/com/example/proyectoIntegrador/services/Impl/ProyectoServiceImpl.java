@@ -1,8 +1,8 @@
 package com.example.proyectoIntegrador.services.Impl;
 
+import com.example.proyectoIntegrador.models.InfoUser;
 import com.example.proyectoIntegrador.models.LoginDTO;
 import com.example.proyectoIntegrador.models.RegisterDTO;
-import com.example.proyectoIntegrador.models.ResponseLogin;
 import com.example.proyectoIntegrador.models.ResponseRegister;
 import com.example.proyectoIntegrador.repository.ProyectoRepository;
 import com.example.proyectoIntegrador.services.ProyectoService;
@@ -20,10 +20,22 @@ public class ProyectoServiceImpl implements ProyectoService {
     private final ProyectoRepository proyectoRepository;
 
     @Override
-    public ResponseLogin loginService(LoginDTO loginDTO) {
+    public InfoUser loginService(LoginDTO loginDTO) {
 
+        var infoUser = proyectoRepository.validateUser(loginDTO.getUsername())
+                .orElseThrow(() -> {
+                    log.debug("Error. El usuario no esta registrado");
+                    return new RuntimeException("Error. El usuario no esta registrado");
+                });
 
-        return null;
+        proyectoRepository.validatePassword(infoUser.getIdClient(), loginDTO.getPassword())
+                .orElseThrow(() -> {
+                    log.debug("Error. Contraseña no valida");
+                    return new RuntimeException("Error. Contraseña no valida");
+                });
+
+        return infoUser;
+
     }
 
     @Override
@@ -35,9 +47,12 @@ public class ProyectoServiceImpl implements ProyectoService {
 
         try {
 
-            proyectoRepository.registerUser(registerDTO).orElseThrow(()-> new RuntimeException("Error al registrar usuario"));
+            proyectoRepository.registerUser(registerDTO)
+                    .orElseThrow(() -> new RuntimeException("Error al registrar usuario"));
 
-            var idUser = proyectoRepository.getIdUser(registerDTO.getUsername()).orElseThrow(()-> new RuntimeException("Error. No se encontro el usuario"));
+            var idUser = proyectoRepository.getIdUser(registerDTO.getUsername()).orElseThrow(() -> new RuntimeException("Error. No se encontro el usuario"));
+
+            proyectoRepository.savePasswordUser(idUser, registerDTO.getPassword()).orElseThrow(() -> new RuntimeException("Error, al guardar la contraseña"));
 
             int numeroAleatorio = random.nextInt(100); // 0 a 99
             proyectoRepository.setSessiones(numeroAleatorio, idUser);
@@ -51,4 +66,5 @@ public class ProyectoServiceImpl implements ProyectoService {
         }
 
     }
+
 }

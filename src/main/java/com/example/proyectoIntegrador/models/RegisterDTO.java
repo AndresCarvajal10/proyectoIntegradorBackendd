@@ -24,5 +24,5 @@ public class RegisterDTO {
     @NotBlank(message = "you must specify the password field")
     private String password;
     @NotBlank(message = "you must specify the rolUser field")
-    private String rolUser;
+    private int rolUser;
 }

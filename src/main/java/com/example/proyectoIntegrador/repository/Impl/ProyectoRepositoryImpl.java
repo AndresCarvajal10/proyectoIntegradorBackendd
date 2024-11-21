@@ -61,7 +61,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ClienteRowMapper()));
 
         } catch (Exception e) {
-            log.debug("No se pudo registar el usuario: {}", e.getMessage());
+            log.debug("No se pudo encontrar el usuario: {}", e.getMessage());
             return Optional.empty();
         }
     }
@@ -79,7 +79,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Integer.class, userName));
 
         } catch (Exception e) {
-            log.debug("No se pudo registar el usuario: {}", e.getMessage());
+            log.debug("No se pudo encontro usuario con ese username: {}", e.getMessage());
             return Optional.empty();
         }
 
@@ -110,7 +110,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
             }, username));
 
         } catch (Exception e) {
-            log.debug("No se pudo registar el usuario: {}", e.getMessage());
+            log.debug("No se pudo validar el usuario: {}", e.getMessage());
             return Optional.empty();
         }
 
@@ -158,7 +158,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
             ));
 
         } catch (Exception e) {
-            log.debug("No se pudo guardar session: {}", e.getMessage());
+            log.debug("No se pudo guardar la contraseña: {}", e.getMessage());
             return Optional.empty();
         }
 

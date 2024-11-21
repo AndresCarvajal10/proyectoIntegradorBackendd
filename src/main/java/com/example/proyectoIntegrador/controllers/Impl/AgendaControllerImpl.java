@@ -2,10 +2,11 @@ package com.example.proyectoIntegrador.controllers.Impl;
 
 import com.example.proyectoIntegrador.controllers.AgendaController;
 import com.example.proyectoIntegrador.enums.CodesResponse;
-import com.example.proyectoIntegrador.models.InfoUser;
+import com.example.proyectoIntegrador.models.AgendaCita;
+import com.example.proyectoIntegrador.models.DataUserDTO;
 import com.example.proyectoIntegrador.models.ResponseGeneric;
 import com.example.proyectoIntegrador.models.ResponseLogin;
-import com.example.proyectoIntegrador.models.dataUserDTO;
+import com.example.proyectoIntegrador.services.AgendaService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,18 +14,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @Slf4j
 public class AgendaControllerImpl implements AgendaController {
+
+    private final AgendaService agendaService;
+
     @Override
-    public ResponseEntity<ResponseGeneric> getListAgend(dataUserDTO dataUser, HttpServletRequest request) {
+    public ResponseEntity<ResponseGeneric> getListAgend(DataUserDTO dataUser, HttpServletRequest request) {
         log.debug("START getListAgend");
 
         try {
-            InfoUser userInfoLogin = null;//proyectoService.loginService(dataUser);
+            List<AgendaCita> userInfoLogin = agendaService.getListCitas(dataUser.getIdClient());
 
-            ResponseLogin responseLogin = new ResponseLogin();
+            ResponseGeneric responseLogin = new ResponseGeneric();
             responseLogin.setResponseCode(CodesResponse.OK.getCode());
             responseLogin.setResponseDesc(CodesResponse.OK.getDescription());
             responseLogin.setResponseObj(userInfoLogin);

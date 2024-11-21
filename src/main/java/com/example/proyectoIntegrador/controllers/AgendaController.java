@@ -1,16 +1,14 @@
 package com.example.proyectoIntegrador.controllers;
 
-import com.example.proyectoIntegrador.models.LoginDTO;
 import com.example.proyectoIntegrador.models.ResponseGeneric;
-import com.example.proyectoIntegrador.models.ResponseLogin;
-import com.example.proyectoIntegrador.models.dataUserDTO;
+import com.example.proyectoIntegrador.models.DataUserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/agenda")
+@RequestMapping("/integrador/agendaCita")
 public interface AgendaController {
 
     /**
@@ -21,8 +19,8 @@ public interface AgendaController {
      * @return un ResponseEntity que contiene un objeto ResponseLogin con la información del usuario si el inicio de sesión es exitoso,
      * o un mensaje de error si el inicio de sesión falla
      */
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ResponseBody
-    ResponseEntity<ResponseGeneric> getListAgend(@Valid @RequestBody dataUserDTO loginDTO, HttpServletRequest request);
+    ResponseEntity<ResponseGeneric> getListAgend(@ModelAttribute @Valid DataUserDTO loginDTO, HttpServletRequest request);
 
 }

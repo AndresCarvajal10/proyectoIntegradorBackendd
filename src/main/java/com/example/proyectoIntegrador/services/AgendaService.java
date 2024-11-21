@@ -7,4 +7,6 @@ import java.util.List;
 public interface AgendaService {
 
     List<AgendaCita> getListCitas(int idClient);
+
+    int insertCita(AgendaCita agendaCita);
 }

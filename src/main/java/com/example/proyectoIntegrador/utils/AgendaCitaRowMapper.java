@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 public class AgendaCitaRowMapper implements RowMapper<AgendaCita> {
 
@@ -16,21 +15,11 @@ public class AgendaCitaRowMapper implements RowMapper<AgendaCita> {
         agendaCita.setAgendaCitaId(rs.getInt("agenda_cita_id"));
         agendaCita.setUsuarioId(rs.getInt("usuario_id"));
         agendaCita.setEmpleadoId(rs.getInt("empleado_id"));
-        agendaCita.setCitaId(rs.getInt("cita_id"));
-
-        Timestamp fechaInicio = rs.getTimestamp("fecha_inicio");
-        if (fechaInicio != null) {
-            agendaCita.setFechaInicio(fechaInicio);
-        }
-
+        agendaCita.setFechaInicio(String.valueOf(rs.getInt("fecha_inicio")));
         agendaCita.setEstado(rs.getString("estado"));
         agendaCita.setDescripcion(rs.getString("descripcion"));
         agendaCita.setDireccion(rs.getString("direccion"));
-
-        int telefono = rs.getInt("telefono");
-        if (!rs.wasNull()) {
-            agendaCita.setTelefono(telefono);
-        }
+        agendaCita.setTelefono(rs.getString("telefono"));
 
         return agendaCita;
     }

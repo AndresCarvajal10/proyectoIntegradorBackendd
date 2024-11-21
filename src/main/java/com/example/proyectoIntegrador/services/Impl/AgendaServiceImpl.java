@@ -21,4 +21,10 @@ public class AgendaServiceImpl implements AgendaService {
         log.debug("start getListCitas");
         return agendaCitaRepository.getListAgenda(idClient).orElse(List.of());
     }
+
+    @Override
+    public int insertCita(AgendaCita agendaCita) {
+        return 0;
+    }
+
 }

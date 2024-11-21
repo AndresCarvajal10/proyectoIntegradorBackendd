@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class InfoUser {
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String idClient;
     private String name;
     private String lastName;

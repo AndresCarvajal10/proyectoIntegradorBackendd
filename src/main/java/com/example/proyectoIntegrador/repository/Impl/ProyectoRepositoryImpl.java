@@ -94,11 +94,12 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         try {
 
             String sql = """
-                    SELECT nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM clientes
+                    SELECT cliente_id, nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM clientes
                     WHERE username = ?
                     """;
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 InfoUser data = new InfoUser();
+                data.setIdClient(rs.getString("cliente_id"));
                 data.setName(rs.getString("nombre"));
                 data.setLastName(rs.getString("apellido"));
                 data.setAddres(rs.getString("direccion"));
@@ -117,28 +118,30 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
 
     @Override
     public Optional<Boolean> validatePassword(String idClient, String password) {
-
         log.debug("start validatePassword");
+        int id = Integer.parseInt(idClient);
 
         String sql = """
+        SELECT EXISTS (
             SELECT 1
             FROM passwords
             WHERE usuario_id = ? AND passwordValue = ?
-            LIMIT 1
-            """;
+        )
+        """;
 
         try {
-            // Ejecuta la consulta y verifica si hay resultados
-            List<Boolean> results = jdbcTemplate.query(sql, (rs, rowNum) -> Boolean.TRUE, idClient, password);
+            // Ejecuta la consulta y devuelve el resultado
+            Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, id, password);
 
-            // Retorna `Optional` basado en si la lista tiene resultados
-            return results.isEmpty() ? Optional.of(Boolean.FALSE) : Optional.of(Boolean.TRUE);
+            // Retorna el resultado envuelto en un Optional
+            return Optional.ofNullable(exists);
 
         } catch (Exception e) {
             log.error("Error validando la contraseña para el usuario {}: {}", idClient, e.getMessage());
             return Optional.empty();
         }
     }
+
 
     @Override
     public Optional<Integer> savePasswordUser(int idClient, String password) {

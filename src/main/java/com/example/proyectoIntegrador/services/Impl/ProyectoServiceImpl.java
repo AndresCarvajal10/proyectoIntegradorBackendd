@@ -46,7 +46,8 @@ public class ProyectoServiceImpl implements ProyectoService {
         log.debug("start registerUser");
 
         try {
-
+            //Registro de solo usuarios
+            registerDTO.setRolUser("2");
             proyectoRepository.registerUser(registerDTO)
                     .orElseThrow(() -> new RuntimeException("Error al registrar usuario"));
 

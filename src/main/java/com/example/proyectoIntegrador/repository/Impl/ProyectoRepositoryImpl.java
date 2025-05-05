@@ -27,7 +27,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
 
         try {
 
-            String sql = "INSERT INTO clientes (nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id) " +
+            String sql = "INSERT INTO cliente (nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             return Optional.of(jdbcTemplate.update(sql,
@@ -56,7 +56,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         try {
 
             String sql = """
-                    SELECT nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM clientes
+                    SELECT nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM cliente
                     """;
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ClienteRowMapper()));
 
@@ -73,7 +73,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
 
         try {
             String sql = """
-                    SELECT cliente_id FROM clientes WHERE username = ?
+                    SELECT cliente_id FROM cliente WHERE username = ?
                     """;
 
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Integer.class, userName));
@@ -94,7 +94,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         try {
 
             String sql = """
-                    SELECT cliente_id, nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM clientes
+                    SELECT cliente_id, nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM cliente
                     WHERE username = ?
                     """;
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
@@ -124,8 +124,8 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         String sql = """
         SELECT EXISTS (
             SELECT 1
-            FROM passwords
-            WHERE usuario_id = ? AND passwordValue = ?
+            FROM user_credentials
+            WHERE usuario_id = ? AND password_hash = ?
         )
         """;
 
@@ -134,7 +134,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
             Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, id, password);
 
             // Retorna el resultado envuelto en un Optional
-            return Optional.ofNullable(exists);
+            return Optional.of(exists);
 
         } catch (Exception e) {
             log.error("Error validando la contraseña para el usuario {}: {}", idClient, e.getMessage());
@@ -149,7 +149,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         log.debug("start guardar password");
         try {
             String sql = """
-                    INSERT INTO passwords (usuario_id, passwordValue) VALUES (?, ?)
+                    INSERT INTO user_credentials (usuario_id, password_hash) VALUES (?, ?)
                     """;
 
             return Optional.of(jdbcTemplate.update(sql,

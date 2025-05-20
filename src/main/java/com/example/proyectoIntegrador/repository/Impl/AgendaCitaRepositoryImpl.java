@@ -9,9 +9,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +51,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
                 data.setDescripcion(rs.getString("descripcion"));
                 data.setDireccion(rs.getString("direccion"));
                 data.setTelefono(rs.getString("telefono"));
-                data.setFechaInicio(obtenerFechaEnviar(String.valueOf(rs.getInt("fecha_inicio"))));
+                data.setFechaInicio(obtenerFechaEnviar(String.valueOf(rs.getInt("fecha_inicio"))).toString());
                 return data;
             }, idClient);
 
@@ -87,9 +89,9 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
             KeyHolder keyHolder = new GeneratedKeyHolder();
 
             int rowsAffected = jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sqlCita, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(sqlCita, new String[]{"cita_id"});
                 ps.setString(1, description);
-                ps.setString(2, fecha);
+                ps.setDate(2, Date.valueOf(obtenerFechaEnviar(fecha)));
                 ps.setString(3, hora);
                 return ps;
             }, keyHolder);
@@ -215,7 +217,38 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
         }
     }
 
-    public String obtenerFechaEnviar(String fecha) {
+
+    public Optional<Boolean> hayDisponibilidadCita(LocalDate fechaDeseada, LocalTime horaDeseada) {
+
+        log.debug("start hayDisponibilidadCita");
+
+        LocalTime horaInicio = horaDeseada.minusMinutes(30);
+        LocalTime horaFin = horaDeseada.plusMinutes(30);
+
+        String sql = """
+                SELECT COUNT(*) FROM cita WHERE fecha = ? AND hora BETWEEN ? AND ?
+                """;
+
+        try {
+            Integer cantidad = jdbcTemplate.queryForObject(
+                    sql,
+                    Integer.class,
+                    Date.valueOf(fechaDeseada),
+                    Time.valueOf(horaInicio),
+                    Time.valueOf(horaFin)
+            );
+
+            return cantidad == 0 ? Optional.of(true) : Optional.empty(); // true = disponible
+
+        } catch (Exception e) {
+            log.error("Error al hayDisponibilidadCita: {}", e.getMessage());
+            return Optional.empty();
+        }
+
+    }
+
+
+    public LocalDate obtenerFechaEnviar(String fecha) {
 
         if (fecha != null && !fecha.isEmpty()) {
 
@@ -226,7 +259,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
             LocalDate date = LocalDate.parse(fecha, inputFormatter);
 
             // Convertir a String con el formato deseadO
-            return date.format(outputFormatter);
+            return date;
 
         } else {
             // Obtener la fecha de hoy
@@ -236,7 +269,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");  // Cambiar a formato yyyyMMdd
 
             // Formatear la fecha en el nuevo formato
-            return today.format(formatter);
+            return LocalDate.parse(today.format(formatter), formatter);
         }
 
     }

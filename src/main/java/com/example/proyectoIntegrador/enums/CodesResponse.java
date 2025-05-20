@@ -8,7 +8,8 @@ public enum CodesResponse {
     OK("0000", "STATUS OK"),
     ERROR_NOT_LOGIN("1231", "Error. La contraseña o el usuario son incorrectos"),
     USER_EXISTS("9994", "User already exists"),
-    ERROR_REGISTER_USER("6611", "Error al registrar usuario");
+    ERROR_REGISTER_USER("6611", "Error al registrar usuario"),
+    ERROR_SAVE_AGEND("6612", "Error. No se pudo agendar la cita");
 
 
     private final String code;

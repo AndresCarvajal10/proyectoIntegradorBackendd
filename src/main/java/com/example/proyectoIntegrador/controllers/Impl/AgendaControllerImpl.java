@@ -60,8 +60,8 @@ public class AgendaControllerImpl implements AgendaController {
 
         } catch (Exception e) {
             ResponseLogin responseError = new ResponseLogin();
-            responseError.setResponseCode(CodesResponse.ERROR_NOT_LOGIN.getCode());
-            responseError.setResponseDesc(CodesResponse.ERROR_NOT_LOGIN.getDescription());
+            responseError.setResponseCode(CodesResponse.ERROR_SAVE_AGEND.getCode());
+            responseError.setResponseDesc(CodesResponse.ERROR_SAVE_AGEND.getDescription());
             responseError.setResponseObj(e.getMessage());
 
             return ResponseEntity.status(HttpStatus.OK).body(responseError);

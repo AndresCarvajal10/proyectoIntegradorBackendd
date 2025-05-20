@@ -28,7 +28,7 @@ public interface AgendaController {
 
     @PostMapping("/scheduleAnAppointment")
     @ResponseBody
-    ResponseEntity<ResponseGeneric> scheduleAnAppointment(@RequestBody DataAppointmentDTO dataAppointmentDTO, HttpServletRequest request);
+    ResponseEntity<ResponseGeneric> scheduleAnAppointment(@Valid @RequestBody DataAppointmentDTO dataAppointmentDTO, HttpServletRequest request);
 
 
 }

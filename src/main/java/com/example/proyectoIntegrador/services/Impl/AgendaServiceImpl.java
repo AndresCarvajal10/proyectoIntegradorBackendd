@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -31,11 +34,20 @@ public class AgendaServiceImpl implements AgendaService {
     public boolean scheduleAnAppointment(DataAppointmentDTO dataAppointmentDTO) {
         log.debug("start scheduleAnAppointment");
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");  // Cambiar a formato yyyyMMdd
+        DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("HHmmss");  // Cambiar a formato HHmmss
+
+        LocalDate date = LocalDate.parse(dataAppointmentDTO.getFecha(), formatter);
+        LocalTime time = LocalTime.parse(dataAppointmentDTO.getHora(), formatterTime);
+
         agendaCitaRepository.validateClient(dataAppointmentDTO.getClienteId())
                 .orElseThrow(() -> new RuntimeException("cliente not found"));
 
         agendaCitaRepository.validateVeterinarian(dataAppointmentDTO.getMedicoId())
                 .orElseThrow(() -> new RuntimeException("veterinario not found"));
+
+        agendaCitaRepository.hayDisponibilidadCita(date, time)
+                .orElseThrow(() -> new RuntimeException("No hay disponibilidad de citas"));
 
         agendaCitaRepository.insertAgendaCita(dataAppointmentDTO.getDescription(), dataAppointmentDTO.getFecha(),
                         dataAppointmentDTO.getHora(), dataAppointmentDTO.getEstadoId(), dataAppointmentDTO.getClienteId(), dataAppointmentDTO.getMedicoId())

@@ -35,23 +35,21 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
         try {
             // Construye la consulta SQL
             String sql = """
-                    SELECT c.cita_id, c.descripcion, c.fecha, c.hora, ac.agenda_cita_id, ac.usuario_id, ac.empleado_id,
-                    ac.fecha_inicio, ac.estado, ac.descripcion, ac.direccion, ac.telefono
+                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita 
                     FROM agenda_cita ac 
-                        JOIN cita c ON ac.cita_id = c.cita_id 
-                    WHERE ac.cliente_id =  ?
+                    left join cita c on c.cita_id = ac.cita_id 
+                    left join estado_cita ec on ec.estado_id  = ac.estado_id 
+                    WHERE cliente_id = ?  
+                    order by c.fecha desc, c.hora desc 
                     """;
 
             var empresas = jdbcTemplate.query(sql, (rs, rowNum) -> {
                 AgendaCita data = new AgendaCita();
-                data.setAgendaCitaId(rs.getInt("agenda_cita_id"));
-                data.setUsuarioId(rs.getInt("usuario_id"));
-                data.setEmpleadoId(rs.getInt("empleado_id"));
-                data.setEstado(rs.getString("estado"));
+                data.setAgendaCitaId(rs.getInt("agenda_id"));
                 data.setDescripcion(rs.getString("descripcion"));
-                data.setDireccion(rs.getString("direccion"));
-                data.setTelefono(rs.getString("telefono"));
-                data.setFechaInicio(obtenerFechaEnviar(String.valueOf(rs.getInt("fecha_inicio"))).toString());
+                data.setFechaInicio(rs.getString("fecha"));
+                data.setHoraInicio(rs.getString("hora"));
+                data.setEstado(rs.getString("estado_cita"));
                 return data;
             }, idClient);
 

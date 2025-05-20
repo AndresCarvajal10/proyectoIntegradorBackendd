@@ -27,7 +27,8 @@ public class AgendaServiceImpl implements AgendaService {
         agendaCitaRepository.validateClient(idClient)
                 .orElseThrow(() -> new RuntimeException("cliente not found"));
 
-        return agendaCitaRepository.getListAgenda(idClient).orElse(List.of());
+        return agendaCitaRepository.getListAgenda(idClient)
+                .orElseThrow(() -> new RuntimeException("El usuario no tiene citas agendadas"));
     }
 
     @Override

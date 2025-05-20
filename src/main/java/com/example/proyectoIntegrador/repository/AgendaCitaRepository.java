@@ -9,5 +9,13 @@ public interface AgendaCitaRepository {
 
     Optional<List<AgendaCita>> getListAgenda(int idClient);
 
-    public int insertAgendaCita(AgendaCita agendaCita);
+    Optional<Boolean> validateClient(int idClient);
+
+    Optional<Boolean> validateVeterinarian(int idVeterinarian);
+
+    Optional<Integer> insertAgendaCita(String description, String fecha, String hora, Integer estadoId, Integer clienteId, Integer medicoId);
+
+    Optional<Boolean> actualizarFechaHoraCita(Integer citaId, String nuevaFecha, String nuevaHora, Integer medicoId);
+
+    Optional<Boolean> cancelarCita(Integer citaId);
 }

@@ -1,7 +1,8 @@
 package com.example.proyectoIntegrador.controllers;
 
-import com.example.proyectoIntegrador.models.ResponseGeneric;
+import com.example.proyectoIntegrador.models.DataAppointmentDTO;
 import com.example.proyectoIntegrador.models.DataUserDTO;
+import com.example.proyectoIntegrador.models.ResponseGeneric;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,12 @@ public interface AgendaController {
     @GetMapping("/list")
     @ResponseBody
     ResponseEntity<ResponseGeneric> getListAgend(@ModelAttribute @Valid DataUserDTO loginDTO, HttpServletRequest request);
+
+
+
+    @PostMapping("/scheduleAnAppointment")
+    @ResponseBody
+    ResponseEntity<ResponseGeneric> scheduleAnAppointment(@RequestBody DataAppointmentDTO dataAppointmentDTO, HttpServletRequest request);
+
 
 }

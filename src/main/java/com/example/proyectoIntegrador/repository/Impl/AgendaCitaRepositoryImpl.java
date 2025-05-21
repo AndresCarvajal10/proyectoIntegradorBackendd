@@ -37,7 +37,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
         try {
             // Construye la consulta SQL
             String sql = """
-                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita 
+                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita, ac.estado_id
                     FROM agenda_cita ac 
                     left join cita c on c.cita_id = ac.cita_id 
                     left join estado_cita ec on ec.estado_id  = ac.estado_id 
@@ -52,6 +52,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
                 data.setFechaInicio(rs.getString("fecha"));
                 data.setHoraInicio(rs.getString("hora"));
                 data.setEstado(rs.getString("estado_cita"));
+                data.setEstadoCitaId(rs.getInt("estado_id"));
                 return data;
             }, idClient);
 
@@ -168,7 +169,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
             String sqlCancelar = """
                     UPDATE agenda_cita
                     SET estado_id = 3
-                    WHERE cita_id = ? and cliente_id = ? and estado_id in (1, 2, 4)
+                    WHERE agenda_id = ? and cliente_id = ? and estado_id in (1, 2, 4)
                     """;
 
             int rows = jdbcTemplate.update(sqlCancelar, citaId, clienteId);
@@ -289,7 +290,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
         try {
             // Construye la consulta SQL
             String sql = """
-                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita, p.nombre as nombreVete, p.apellido, ac.mascota_id, as apellidoVete
+                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita, p.nombre as nombreVete, p.apellido as apellidoVete, ac.mascota_id 
                     FROM agenda_cita ac 
                     left join cita c on c.cita_id = ac.cita_id 
                     left join estado_cita ec on ec.estado_id  = ac.estado_id 

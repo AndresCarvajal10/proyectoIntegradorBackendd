@@ -314,7 +314,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
         try {
             // Construye la consulta SQL
             String sql = """
-                    select m.mascota_id, m.codigo, m.nombre, m.edad, r.descripcion as raza_mascota
+                    select m.mascota_id, m.codigo, m.nombre, m.edad, m.genero , r.descripcion as raza_mascota
                     from mascota m 
                     left join raza r on m.raza_id = r.raza_id 
                     where cliente_id = ? 
@@ -323,10 +323,11 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
             var infoMascota = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 InfoMascota data = new InfoMascota();
                 data.setIdMascota(rs.getInt("mascota_id"));
-                data.setCodigo(rs.getInt("codigo"));
+                data.setCodigo(rs.getString("codigo"));
                 data.setNombreMascota(rs.getString("nombre"));
                 data.setEdad(rs.getInt("edad"));
                 data.setTipoRaza(rs.getString("raza_mascota"));
+                data.setGenero(rs.getString("genero"));
                 return data;
             }, idClient);
 

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -35,10 +37,19 @@ public class PetsServicesImpl implements PetsServices {
         agendaCitaRepository.validateClient(dataMascotaDTO.getIdCliente())
                 .orElseThrow(() -> new RuntimeException("cliente not found"));
 
-        petsRepository.validateExistPet(dataMascotaDTO.getNombre())
-                .orElseThrow(() -> new RuntimeException("Ya existe un mascota existente"));
+        var existPet = petsRepository.validateExistPet(dataMascotaDTO.getNombre(), dataMascotaDTO.getEdad(), dataMascotaDTO.getGenero(), dataMascotaDTO.getIdCliente())
+                .orElseThrow(() -> new RuntimeException("Error. No se pudo validar la existencia de la mascota con los datos ingresados"));
 
-        petsRepository.addPet(dataMascotaDTO.getIdCliente(), dataMascotaDTO.getNombre(),
+        if (existPet) {
+            log.debug("Existe la mascota con los datos ingresados");
+            throw new RuntimeException("La mascota ya existe");
+        } else {
+            log.debug("No existe la mascota con los datos ingresados");
+        }
+
+        String codigo = UUID.randomUUID().toString().substring(0, 8);
+
+        petsRepository.addPet(dataMascotaDTO.getIdCliente(), codigo, dataMascotaDTO.getNombre(),
                         dataMascotaDTO.getEdad(), dataMascotaDTO.getGenero(), dataMascotaDTO.getRazaId())
                 .orElseThrow(() -> new RuntimeException("No se pudo agregar la mascota"));
 

@@ -1,6 +1,8 @@
 package com.example.proyectoIntegrador.services.Impl;
 
 import com.example.proyectoIntegrador.models.DataMascotaDTO;
+import com.example.proyectoIntegrador.models.DataUserDTO;
+import com.example.proyectoIntegrador.models.InfoMascota;
 import com.example.proyectoIntegrador.repository.AgendaCitaRepository;
 import com.example.proyectoIntegrador.repository.PetsRepository;
 import com.example.proyectoIntegrador.services.PetsServices;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -54,5 +57,18 @@ public class PetsServicesImpl implements PetsServices {
                 .orElseThrow(() -> new RuntimeException("No se pudo agregar la mascota"));
 
         return true;
+    }
+
+    /**
+     * @param dataUserDTO
+     * @return
+     */
+    @Override
+    public List<InfoMascota> getListPets(DataUserDTO dataUserDTO) {
+        agendaCitaRepository.validateClient(dataUserDTO.getIdClient())
+                .orElseThrow(() -> new RuntimeException("cliente not found"));
+
+        return petsRepository.getListPetsByUser(dataUserDTO.getIdClient())
+                .orElseThrow(() -> new RuntimeException("El usuario no tiene mascotas registradas"));
     }
 }

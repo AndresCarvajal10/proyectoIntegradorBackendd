@@ -1,11 +1,13 @@
 package com.example.proyectoIntegrador.repository.Impl;
 
+import com.example.proyectoIntegrador.models.InfoMascota;
 import com.example.proyectoIntegrador.repository.PetsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -75,5 +77,41 @@ public class PetsRepositoryImpl implements PetsRepository {
             return Optional.empty();
         }
 
+    }
+
+    /**
+     * @param idClient
+     * @return
+     */
+    @Override
+    public Optional<List<InfoMascota>> getListPetsByUser(int idClient) {
+        log.debug("start getInfoMascota");
+
+        try {
+            // Construye la consulta SQL
+            String sql = """
+                    select m.mascota_id, m.codigo, m.nombre, m.edad, m.genero , r.descripcion as raza_mascota
+                    from mascota m 
+                    left join raza r on m.raza_id = r.raza_id 
+                    where cliente_id = ? 
+                    """;
+
+            var infoMascota = jdbcTemplate.query(sql, (rs, rowNum) -> {
+                InfoMascota data = new InfoMascota();
+                data.setIdMascota(rs.getInt("mascota_id"));
+                data.setCodigo(rs.getString("codigo"));
+                data.setNombreMascota(rs.getString("nombre"));
+                data.setEdad(rs.getInt("edad"));
+                data.setTipoRaza(rs.getString("raza_mascota"));
+                data.setGenero(rs.getString("genero"));
+                return data;
+            }, idClient);
+
+            return infoMascota.isEmpty() ? Optional.empty() : Optional.of(infoMascota);
+
+        } catch (Exception e) {
+            log.error("There was a problem al obtener informacion de la mascota: " + e.getMessage());
+            return Optional.empty();
+        }
     }
 }

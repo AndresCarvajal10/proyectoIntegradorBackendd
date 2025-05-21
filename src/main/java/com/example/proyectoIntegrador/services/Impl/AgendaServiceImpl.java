@@ -48,11 +48,14 @@ public class AgendaServiceImpl implements AgendaService {
         agendaCitaRepository.validateVeterinarian(dataAppointmentDTO.getMedicoId())
                 .orElseThrow(() -> new RuntimeException("veterinario not found"));
 
+        agendaCitaRepository.validateMascota(dataAppointmentDTO.getMascotaId())
+                .orElseThrow(() -> new RuntimeException("mascota not found"));
+
         agendaCitaRepository.hayDisponibilidadCita(date, time)
                 .orElseThrow(() -> new RuntimeException("No hay disponibilidad de citas"));
 
         agendaCitaRepository.insertAgendaCita(dataAppointmentDTO.getDescription(), dataAppointmentDTO.getFecha(),
-                        dataAppointmentDTO.getHora(), dataAppointmentDTO.getEstadoId(), dataAppointmentDTO.getClienteId(), dataAppointmentDTO.getMedicoId())
+                        dataAppointmentDTO.getHora(), dataAppointmentDTO.getEstadoId(), dataAppointmentDTO.getClienteId(), dataAppointmentDTO.getMedicoId(), dataAppointmentDTO.getMascotaId())
                 .orElseThrow(() -> new RuntimeException("No se pudo agendar la cita"));
 
         return true;
@@ -70,7 +73,7 @@ public class AgendaServiceImpl implements AgendaService {
                     return new RuntimeException("Error. El usuario no esta registrado");
                 });
 
-        var infoMascota = agendaCitaRepository.getInfoMascota(detailAppointmentDTO.getIdClient())
+        var infoMascota = agendaCitaRepository.getInfoMascota(detailAppointmentDTO.getIdClient(), agendaCitaDetail.getMascotaId())
                 .orElseThrow(() -> new RuntimeException("El usuario no tiene una mascota registrada"));
 
         agendaCitaDetail.setInfoUser(infoUser);

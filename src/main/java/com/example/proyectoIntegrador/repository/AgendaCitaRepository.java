@@ -15,9 +15,11 @@ public interface AgendaCitaRepository {
 
     Optional<Boolean> validateClient(int idClient);
 
+    Optional<Boolean> validateMascota(int mascotaId);
+
     Optional<Boolean> validateVeterinarian(int idVeterinarian);
 
-    Optional<Integer> insertAgendaCita(String description, String fecha, String hora, Integer estadoId, Integer clienteId, Integer medicoId);
+    Optional<Integer> insertAgendaCita(String description, String fecha, String hora, Integer estadoId, Integer clienteId, Integer medicoId, Integer mascotaId);
 
     Optional<Boolean> actualizarFechaHoraCita(Integer citaId, String nuevaFecha, String nuevaHora, Integer medicoId);
 
@@ -27,7 +29,7 @@ public interface AgendaCitaRepository {
 
     Optional<AgendaCitaDetail> getDetailAppointment(int idAgenda, int idClient);
 
-    Optional<InfoMascota> getInfoMascota(int idClient);
+    Optional<InfoMascota> getInfoMascota(int idClient, int mascotaId);
 
     Optional<Boolean> validateExistAppointment(int idAppointment, int idClient);
 }

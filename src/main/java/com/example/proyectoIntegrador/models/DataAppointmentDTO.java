@@ -11,6 +11,8 @@ public class DataAppointmentDTO {
     private int clienteId;
     @NotBlank(message = "required field medicoId")
     private int medicoId;
+    @NotBlank(message = "required field mascotaId")
+    private int mascotaId;
     @NotBlank(message = "required field description")
     private String description;
     @NotBlank(message = "required field fecha")

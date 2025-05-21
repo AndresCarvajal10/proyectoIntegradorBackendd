@@ -69,7 +69,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
 
 
     @Transactional
-    public Optional<Integer> insertAgendaCita(String description, String fecha, String hora, Integer estadoId, Integer clienteId, Integer medicoId) {
+    public Optional<Integer> insertAgendaCita(String description, String fecha, String hora, Integer estadoId, Integer clienteId, Integer medicoId, Integer mascotaId) {
         log.debug("Guardar insertAgendaCita");
 
         // SQL para insertar la cita
@@ -80,8 +80,8 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
 
         // SQL para insertar en agenda_cita
         String sqlAgendaCita = """
-                    INSERT INTO agenda_cita (estado_id, cliente_id, cita_id, medico_id)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO agenda_cita (estado_id, cliente_id, cita_id, medico_id, mascota_id)
+                    VALUES (?, ?, ?, ?, ?)
                 """;
 
         try {
@@ -102,7 +102,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
 
                 // Ahora insertamos en agenda_cita usando el cita_id generado
                 int agendaRows = jdbcTemplate.update(sqlAgendaCita,
-                        estadoId, clienteId, citaId.intValue(), medicoId);
+                        estadoId, clienteId, citaId.intValue(), medicoId, mascotaId);
 
                 return (agendaRows > 0) ? Optional.of(citaId.intValue()) : Optional.empty();
             }
@@ -237,6 +237,24 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
     }
 
 
+    @Override
+    public Optional<Boolean> validateMascota(int mascotaId) {
+        log.debug("validate mascota");
+
+        String sql = """
+                SELECT COUNT(*) FROM mascota WHERE mascota_id = ? 
+                """;
+
+        try {
+            var resp = jdbcTemplate.queryForObject(sql, Integer.class, mascotaId);
+            return resp > 0 ? Optional.of(true) : Optional.empty();
+        } catch (Exception e) {
+            log.error("Error al validar mascota: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+
     public Optional<Boolean> hayDisponibilidadCita(LocalDate fechaDeseada, LocalTime horaDeseada) {
 
         log.debug("start hayDisponibilidadCita");
@@ -271,7 +289,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
         try {
             // Construye la consulta SQL
             String sql = """
-                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita, p.nombre as nombreVete, p.apellido as apellidoVete
+                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita, p.nombre as nombreVete, p.apellido, ac.mascota_id, as apellidoVete
                     FROM agenda_cita ac 
                     left join cita c on c.cita_id = ac.cita_id 
                     left join estado_cita ec on ec.estado_id  = ac.estado_id 
@@ -288,6 +306,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
                 data.setHoraInicio(rs.getString("hora"));
                 data.setEstado(rs.getString("estado_cita"));
                 data.setNombreVeterinario(rs.getString("nombreVete") + " " + rs.getString("apellidoVete"));
+                data.setMascotaId(rs.getInt("mascota_id"));
                 return data;
             }, idClient, idAgenda);
 
@@ -308,7 +327,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
      * @return
      */
     @Override
-    public Optional<InfoMascota> getInfoMascota(int idClient) {
+    public Optional<InfoMascota> getInfoMascota(int idClient, int idMascota) {
         log.debug("start getInfoMascota");
 
         try {
@@ -317,7 +336,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
                     select m.mascota_id, m.codigo, m.nombre, m.edad, m.genero , r.descripcion as raza_mascota
                     from mascota m 
                     left join raza r on m.raza_id = r.raza_id 
-                    where cliente_id = ? 
+                    where m.cliente_id = ? and m.mascota_id = ? 
                     """;
 
             var infoMascota = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
@@ -329,7 +348,7 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
                 data.setTipoRaza(rs.getString("raza_mascota"));
                 data.setGenero(rs.getString("genero"));
                 return data;
-            }, idClient);
+            }, idClient, idMascota);
 
             if (infoMascota != null) {
                 return Optional.of(infoMascota);

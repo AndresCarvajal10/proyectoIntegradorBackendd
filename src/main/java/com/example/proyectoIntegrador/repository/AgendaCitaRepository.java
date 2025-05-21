@@ -1,6 +1,8 @@
 package com.example.proyectoIntegrador.repository;
 
 import com.example.proyectoIntegrador.models.AgendaCita;
+import com.example.proyectoIntegrador.models.AgendaCitaDetail;
+import com.example.proyectoIntegrador.models.InfoMascota;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,4 +24,8 @@ public interface AgendaCitaRepository {
     Optional<Boolean> cancelarCita(Integer citaId);
 
     Optional<Boolean> hayDisponibilidadCita(LocalDate fechaDeseada, LocalTime horaDeseada);
+
+    Optional<AgendaCitaDetail> getDetailAppointment(int idAgenda, int idClient);
+
+    Optional<InfoMascota> getInfoMascota(int idClient);
 }

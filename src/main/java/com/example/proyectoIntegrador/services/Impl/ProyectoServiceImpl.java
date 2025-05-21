@@ -56,12 +56,10 @@ public class ProyectoServiceImpl implements ProyectoService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");  // Cambiar a formato yyyyMMdd
 
             // Formatear la fecha en el nuevo formato
-             today.format(formatter);
+            today.format(formatter);
 
             //Registro de solo usuarios
-            registerDTO.setRolUser(2);
             registerDTO.setFechaRegistro(LocalDate.parse(today.format(formatter)));
-            registerDTO.setEstadoCliente("ACTIVO");
             proyectoRepository.registerUser(registerDTO)
                     .orElseThrow(() -> new RuntimeException("Error al registrar usuario"));
 

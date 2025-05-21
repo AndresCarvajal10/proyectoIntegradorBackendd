@@ -1,8 +1,11 @@
 package com.example.proyectoIntegrador.services.Impl;
 
 import com.example.proyectoIntegrador.models.AgendaCita;
+import com.example.proyectoIntegrador.models.AgendaCitaDetail;
 import com.example.proyectoIntegrador.models.DataAppointmentDTO;
+import com.example.proyectoIntegrador.models.DataDetailAppointmentDTO;
 import com.example.proyectoIntegrador.repository.AgendaCitaRepository;
+import com.example.proyectoIntegrador.repository.ProyectoRepository;
 import com.example.proyectoIntegrador.services.AgendaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import java.util.List;
 public class AgendaServiceImpl implements AgendaService {
 
     private final AgendaCitaRepository agendaCitaRepository;
+    private final ProyectoRepository proyectoRepository;
 
     @Override
     public List<AgendaCita> getListCitas(int idClient) {
@@ -55,6 +59,27 @@ public class AgendaServiceImpl implements AgendaService {
                 .orElseThrow(() -> new RuntimeException("No se pudo agendar la cita"));
 
         return true;
+    }
+
+    @Override
+    public AgendaCitaDetail getDetailAppointment(DataDetailAppointmentDTO detailAppointmentDTO) {
+
+        var agendaCitaDetail = agendaCitaRepository.getDetailAppointment(detailAppointmentDTO.getIdAppointment(), detailAppointmentDTO.getIdClient())
+                .orElseThrow(() -> new RuntimeException("No se encontro la cita programada"));
+
+        var infoUser = proyectoRepository.validateUser(detailAppointmentDTO.getUsername())
+                .orElseThrow(() -> {
+                    log.debug("Error. El usuario no esta registrado");
+                    return new RuntimeException("Error. El usuario no esta registrado");
+                });
+
+        var infoMascota = agendaCitaRepository.getInfoMascota(detailAppointmentDTO.getIdClient())
+                .orElseThrow(() -> new RuntimeException("El usuario no tiene una mascota registrada"));
+
+        agendaCitaDetail.setInfoUser(infoUser);
+        agendaCitaDetail.setInfoMascota(infoMascota);
+
+        return agendaCitaDetail;
     }
 
 }

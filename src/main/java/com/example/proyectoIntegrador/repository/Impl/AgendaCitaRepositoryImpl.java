@@ -1,6 +1,8 @@
 package com.example.proyectoIntegrador.repository.Impl;
 
 import com.example.proyectoIntegrador.models.AgendaCita;
+import com.example.proyectoIntegrador.models.AgendaCitaDetail;
+import com.example.proyectoIntegrador.models.InfoMascota;
 import com.example.proyectoIntegrador.repository.AgendaCitaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -243,6 +245,82 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
             return Optional.empty();
         }
 
+    }
+
+    @Override
+    public Optional<AgendaCitaDetail> getDetailAppointment(int idAgenda, int idClient) {
+        try {
+            // Construye la consulta SQL
+            String sql = """
+                    SELECT ac.agenda_id, c.descripcion, c.fecha , c.hora, ec.descripcion as estado_cita, p.nombre as nombreVete, p.apellido as apellidoVete
+                    FROM agenda_cita ac 
+                    left join cita c on c.cita_id = ac.cita_id 
+                    left join estado_cita ec on ec.estado_id  = ac.estado_id 
+                    left join medico m on m.medico_id = ac.medico_id 
+                    left join personal p on p.personal_id = m.identificacion_medico
+                    WHERE cliente_id = ? and ac.agenda_id = ? 
+                    """;
+
+            var empresas = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                AgendaCitaDetail data = new AgendaCitaDetail();
+                data.setAgendaCitaId(rs.getInt("agenda_id"));
+                data.setDescripcion(rs.getString("descripcion"));
+                data.setFechaInicio(rs.getString("fecha"));
+                data.setHoraInicio(rs.getString("hora"));
+                data.setEstado(rs.getString("estado_cita"));
+                data.setNombreVeterinario(rs.getString("nombreVete") + " " + rs.getString("apellidoVete"));
+                return data;
+            }, idClient, idAgenda);
+
+            if (empresas != null) {
+                return Optional.of(empresas);
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (Exception e) {
+            log.error("There was a problem al obtener el detalle de la citas agendada: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @param idClient
+     * @return
+     */
+    @Override
+    public Optional<InfoMascota> getInfoMascota(int idClient) {
+        log.debug("start getInfoMascota");
+
+        try {
+            // Construye la consulta SQL
+            String sql = """
+                    select m.mascota_id, m.codigo, m.nombre, m.edad, r.descripcion as raza_mascota
+                    from mascota m 
+                    left join raza r on m.raza_id = r.raza_id 
+                    where cliente_id = ? 
+                    """;
+
+            var infoMascota = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                InfoMascota data = new InfoMascota();
+                data.setIdMascota(rs.getInt("mascota_id"));
+                data.setCodigo(rs.getInt("codigo"));
+                data.setNombreMascota(rs.getString("nombre"));
+                data.setEdad(rs.getInt("edad"));
+                data.setTipoRaza(rs.getString("raza_mascota"));
+                return data;
+            }, idClient);
+
+            if (infoMascota != null) {
+                return Optional.of(infoMascota);
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (Exception e) {
+            log.error("There was a problem al obtener informacion de la mascota: " + e.getMessage());
+            return Optional.empty();
+        }
     }
 
 

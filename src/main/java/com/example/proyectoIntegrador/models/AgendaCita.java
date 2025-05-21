@@ -9,6 +9,4 @@ public class AgendaCita {
     private String horaInicio;
     private String estado;       // estado
     private String descripcion;  // descripcion
-//    private String direccion;    // direccion
-//    private String telefono;    // telefono
 }

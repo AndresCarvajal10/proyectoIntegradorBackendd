@@ -67,4 +67,29 @@ public class AgendaControllerImpl implements AgendaController {
             return ResponseEntity.status(HttpStatus.OK).body(responseError);
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseGeneric> getDetailAppointment(DataDetailAppointmentDTO detailAppointmentDTO, HttpServletRequest request) {
+
+        log.debug("START scheduleAnAppointment");
+
+        try {
+            AgendaCitaDetail infoAppointment = agendaService.getDetailAppointment(detailAppointmentDTO);
+
+            ResponseGeneric responseLogin = new ResponseGeneric();
+            responseLogin.setResponseCode(CodesResponse.OK.getCode());
+            responseLogin.setResponseDesc(CodesResponse.OK.getDescription());
+            responseLogin.setResponseObj(infoAppointment);
+
+            return ResponseEntity.ok().body(responseLogin);
+
+        } catch (Exception e) {
+            ResponseLogin responseError = new ResponseLogin();
+            responseError.setResponseCode(CodesResponse.ERROR_GET_DATA.getCode());
+            responseError.setResponseDesc(CodesResponse.ERROR_GET_DATA.getDescription());
+            responseError.setResponseObj(e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseError);
+        }
+    }
 }

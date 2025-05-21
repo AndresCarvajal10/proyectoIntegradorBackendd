@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,11 +23,12 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
 
     @Override
     public Optional<Integer> registerUser(RegisterDTO registerDTO) {
+        log.debug("start registerUser");
 
         try {
 
-            String sql = "INSERT INTO cliente (nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO cliente (nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
             return Optional.of(jdbcTemplate.update(sql,
                     registerDTO.getNombre(),
@@ -37,9 +37,8 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
                     registerDTO.getTelefono(),
                     registerDTO.getEmail(),
                     registerDTO.getFechaRegistro(),
-                    registerDTO.getEstadoCliente(),
-                    registerDTO.getUsername(),
-                    registerDTO.getRolUser()
+                    true,
+                    registerDTO.getUsername()
             ));
 
         } catch (Exception e) {
@@ -94,7 +93,7 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         try {
 
             String sql = """
-                    SELECT cliente_id, nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username, rol_id FROM cliente
+                    SELECT cliente_id, nombre, apellido, direccion, telefono, email, fecha_registro, estado_cliente, username FROM cliente
                     WHERE username = ?
                     """;
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
@@ -122,12 +121,12 @@ public class ProyectoRepositoryImpl implements ProyectoRepository {
         int id = Integer.parseInt(idClient);
 
         String sql = """
-        SELECT EXISTS (
-            SELECT 1
-            FROM user_credentials
-            WHERE usuario_id = ? AND password_hash = ?
-        )
-        """;
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM user_credentials
+                    WHERE usuario_id = ? AND password_hash = ?
+                )
+                """;
 
         try {
             // Ejecuta la consulta y devuelve el resultado

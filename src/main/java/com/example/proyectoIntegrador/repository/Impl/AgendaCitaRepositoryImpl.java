@@ -161,17 +161,17 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
     }
 
 
-    public Optional<Boolean> cancelarCita(Integer citaId) {
+    public Optional<Boolean> cancelarCita(Integer citaId, Integer clienteId) {
         log.debug("Cancelando lógicamente la cita {}", citaId);
 
         try {
             String sqlCancelar = """
-                        UPDATE agenda_cita
-                        SET estado_id = 3
-                        WHERE cita_id = ?
+                    UPDATE agenda_cita
+                    SET estado_id = 3
+                    WHERE cita_id = ? and cliente_id = ? and estado_id in (1, 2, 4)
                     """;
 
-            int rows = jdbcTemplate.update(sqlCancelar, citaId);
+            int rows = jdbcTemplate.update(sqlCancelar, citaId, clienteId);
             return rows > 0 ? Optional.of(true) : Optional.empty();
 
         } catch (Exception e) {
@@ -192,6 +192,25 @@ public class AgendaCitaRepositoryImpl implements AgendaCitaRepository {
 
         try {
             var resp = jdbcTemplate.queryForObject(sql, Integer.class, idClient);
+            return resp > 0 ? Optional.of(true) : Optional.empty();
+        } catch (Exception e) {
+            log.error("Error al validar cliente: " + e.getMessage());
+            return Optional.empty();
+        }
+
+    }
+
+    @Override
+    public Optional<Boolean> validateExistAppointment(int idAppointment, int idCliente) {
+
+        log.debug("validateExistAppointment");
+
+        String sql = """
+                SELECT COUNT(*) FROM agenda_cita WHERE agenda_id = ? and cliente_id = ?
+                """;
+
+        try {
+            var resp = jdbcTemplate.queryForObject(sql, Integer.class, idAppointment, idCliente);
             return resp > 0 ? Optional.of(true) : Optional.empty();
         } catch (Exception e) {
             log.error("Error al validar cliente: " + e.getMessage());

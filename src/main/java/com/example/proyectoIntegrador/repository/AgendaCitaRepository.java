@@ -21,11 +21,13 @@ public interface AgendaCitaRepository {
 
     Optional<Boolean> actualizarFechaHoraCita(Integer citaId, String nuevaFecha, String nuevaHora, Integer medicoId);
 
-    Optional<Boolean> cancelarCita(Integer citaId);
+    Optional<Boolean> cancelarCita(Integer citaId, Integer clienteId);
 
     Optional<Boolean> hayDisponibilidadCita(LocalDate fechaDeseada, LocalTime horaDeseada);
 
     Optional<AgendaCitaDetail> getDetailAppointment(int idAgenda, int idClient);
 
     Optional<InfoMascota> getInfoMascota(int idClient);
+
+    Optional<Boolean> validateExistAppointment(int idAppointment, int idClient);
 }

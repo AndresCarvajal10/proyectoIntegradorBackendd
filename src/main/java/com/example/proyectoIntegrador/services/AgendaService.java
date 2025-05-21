@@ -1,9 +1,6 @@
 package com.example.proyectoIntegrador.services;
 
-import com.example.proyectoIntegrador.models.AgendaCita;
-import com.example.proyectoIntegrador.models.AgendaCitaDetail;
-import com.example.proyectoIntegrador.models.DataAppointmentDTO;
-import com.example.proyectoIntegrador.models.DataDetailAppointmentDTO;
+import com.example.proyectoIntegrador.models.*;
 
 import java.util.List;
 
@@ -15,4 +12,5 @@ public interface AgendaService {
 
     AgendaCitaDetail getDetailAppointment(DataDetailAppointmentDTO detailAppointmentDTO);
 
+    boolean cancelledAppointment(DataCancelledAppointmentDTO dataCancelledAppointmentDTO);
 }

@@ -11,6 +11,7 @@ public enum CodesResponse {
     ERROR_REGISTER_USER("6611", "Error al registrar usuario"),
     ERROR_SAVE_AGEND("6612", "Error. No se pudo agendar la cita"),
     ERROR_GET_DATA("6615", "Error. No se pudo consultar el registro"),
+    ERROR_MODIFY_DATA("6616", "Error. No se pudo modificar el registro"),
     ;
 
 
